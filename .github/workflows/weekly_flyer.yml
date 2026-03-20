@@ -1,0 +1,33 @@
+name: Weekly Flyer Downloader
+
+on:
+  schedule:
+    # This runs every Thursday at 12:00 PM UTC (Flyers usually update Thursdays)
+    - cron: '0 12 * * 4'
+  workflow_dispatch: # Allows you to run it manually for testing
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/checkout@v3
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run script
+        run: python fetch_flyer.py
+
+      - name: Commit and Push PDF
+        run: |
+          git config --global user.name "FlyerBot"
+          git config --global user.email "bot@github.com"
+          git add latest_flyer.pdf
+          git commit -m "Update weekly flyer: $(date +'%Y-%m-%d')" || exit 0
+          git push
